@@ -84,13 +84,14 @@ if __name__ == '__main__':
         'negative' : [],
     }
 
+    delete_dir = 'D:/_ImageDataset/Recon_FireClassifier_DB_20200120/'
     load_dataset = lambda npy_path: np.load(npy_path, allow_pickle = True)
 
-    train_dic['positive'] += [ [(flags.root_dir+image_path), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/train_pos.npy')]
-    train_dic['negative'] += [ [(flags.root_dir+image_path), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/train_neg.npy')]
+    train_dic['positive'] += [[image_path.replace('\\', '/').replace(delete_dir, flags.root_dir), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/train_pos.npy')]
+    train_dic['negative'] += [[image_path.replace('\\', '/').replace(delete_dir, flags.root_dir), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/train_neg.npy')]
 
-    valid_dic['positive'] += [ [(flags.root_dir+image_path), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/valid_pos.npy')]
-    valid_dic['negative'] += [ [(flags.root_dir+image_path), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/valid_neg.npy')]
+    valid_dic['positive'] += [[image_path.replace('\\', '/').replace(delete_dir, flags.root_dir), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/valid_pos.npy')]
+    valid_dic['negative'] += [[image_path.replace('\\', '/').replace(delete_dir, flags.root_dir), int(flame), int(smoke)] for (image_path, flame, smoke) in load_dataset('./dataset/valid_neg.npy')]
 
     #######################################################################################
     # 1.1. Info (Dataset)

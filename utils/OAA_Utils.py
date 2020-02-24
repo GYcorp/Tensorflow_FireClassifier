@@ -5,6 +5,47 @@ import numpy as np
 
 OAA_save_index = 0
 
+save_list = [
+    '00a2cb5b13f053db.jpg',
+    '00a5d96a87cfc309.jpg',
+    '00a73c51c469d5e3.jpg',
+    '00a86247d17c155f.jpg',
+    '00a01813890455b0.jpg',
+    '00ba6f39ab44f60d.jpg',
+    '00be0d79e0a0e171.jpg',
+    '00c924a66879cb41.jpg',
+    '00c166304ba7c42e.jpg',
+    '00ca39c9a76bdcbf.jpg',
+    '00cf8d4656ba6c4f.jpg',
+    '00d140ee0135c607.jpg',
+    '00e4eea99bbf598d.jpg',
+    '00f3732b89f6405e.jpg'
+]
+
+def OAA_changes_save(attention_maps, probs, save_paths, labels, last_epoch=False):
+    global OAA_save_index
+
+    atts = attention_maps * (attention_maps > 0) # relu
+
+    for image_index in range(len(attention_maps)):
+        if os.path.basename(save_paths[image_index]) in save_list:
+            # loop only existing label
+            for label_index in np.nonzero(labels[image_index])[0]:
+                
+                att = atts[image_index,:,:,label_index]
+                prob = probs[image_index,label_index]
+                save_path = save_paths[image_index].replace('.jpg','_{}_log_{}.jpg'.format(label_index, OAA_save_index))
+
+                # make dir if not exits
+                if not os.path.exists(os.path.dirname(save_path)):
+                    os.makedirs(os.path.dirname(save_path))
+
+                # normalize 0~1
+                att = att / (att.max() + 1e-8) * 255
+
+                cv2.imwrite(save_path, att)
+            OAA_save_index += 1
+
 def Online_Attention_Accumulation(attention_maps, probs, save_paths, labels, last_epoch=False):
     """accumulate attentions
 
@@ -51,10 +92,6 @@ def Online_Attention_Accumulation(attention_maps, probs, save_paths, labels, las
                 accu_att = cv2.imread(save_path, 0)
                 accu_att = np.maximum(accu_att, att)
                 cv2.imwrite(save_path,  accu_att)
-
-
-def train_Integral_Attention_Model():
-    pass
 
 
 def hybrid_loss(prediction, label):
@@ -106,6 +143,3 @@ def make_accumulated_image_path(image_paths, image_dir, OAA_dir):
 
     """
     return [image_path.replace(image_dir, OAA_dir) for image_path in image_paths]
-
-if __name__ == "__main__":
-    pass
